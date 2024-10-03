@@ -39,7 +39,12 @@ class ChessBoard:
 
     # Placeholder function for moving pieces (to be implemented)
     def move_piece(self, start, end):
-        pass
+        
+        start_x, start_y = start
+        end_x, end_y = end
+
+        self.board[end_x][end_y] = self.board[start_x][start_y]
+        self.board[start_x][start_y] = None
 
     # Placeholder function for validating moves (to be implemented)
     def is_valid_move(self, start, end, player_color):

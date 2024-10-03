@@ -265,20 +265,51 @@ class King:
         return self.piece_type if self.color == 'w' else self.piece_type.lower()
 
     # Placeholder for validating king movement
-    def is_valid_move(self, start, end, player_color):
-        pass
+    def is_valid_move(self, board, start, end):
+
+        start_x, start_y = start
+        end_x, end_y = end
+
+        # If the end position have a piece then that piece color should not be same as currunt piece color
+        if board[end_x][end_y] and board[end_x][end_y].color == self.color:
+            return False
+        
+        is_valid_hr_move =  self.is_horizontal_move(start, end)
+        is_valid_dia_move = self.is_diagonal_move(start, end)
+        is_valid_vr_move = self.is_vertical_move(start, end)
+
+        return is_valid_hr_move or is_valid_dia_move or is_valid_vr_move
 
     # Placeholder for horizontal move validation
-    def is_horizontal_move(self, start, end, player_color):
-        pass
+    def is_horizontal_move(self, start, end):
+
+        start_x, start_y = start
+        end_x, end_y = end
+
+        is_hr_move = (start_x == end_x and abs(start_y-end_y) == 1)
+
+        return is_hr_move
 
     # Placeholder for diagonal move validation
-    def is_diagonal_move(self, board, start, end):
-        pass
+    def is_diagonal_move(self, start, end):
+
+        start_x, start_y = start
+        end_x, end_y = end
+
+        delta = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        is_dia_move = ((end_x-start_x, end_y-start_y) in delta)
+
+        return is_dia_move
 
     # Placeholder for vertical move validation
-    def is_vertical_move(self, board, start, end):
-        pass
+    def is_vertical_move(self, start, end):
+
+        start_x, start_y = start
+        end_x, end_y = end
+
+        is_vr_move = (start_y == end_y and abs(start_x-end_x) == 1)
+
+        return is_vr_move
 
 # Class representing a queen piece
 class Queen:

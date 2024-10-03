@@ -94,7 +94,7 @@ class Pawn:
         if board[end_x][end_y] and board[end_x][end_y].color == self.color:
             return False
         
-        return self.is_forward_move_valid() or self.is_diagonal_move_valid()
+        return self.is_forward_move_valid(board, start, end) or self.is_diagonal_move_valid(board, start, end)
     
     # Placeholder for validating forward moves
     def is_forward_move_valid(self, board, start, end):
@@ -200,6 +200,7 @@ class Rook:
     def __init__(self, color, piece_type):
         self.color = color
         self.piece_type = piece_type
+        self.is_untouched = True
 
     # Representation for printing the piece
     def __repr__(self):
@@ -300,7 +301,7 @@ class Bishop:
         end_x, end_y = end
 
         # The bishop can only move diagonally
-        if not self.is_diagonal_move(self, start, end):
+        if not self.is_diagonal_move(start, end):
             return False
         
         # If the end position have a piece then that piece color should not be same as currunt piece color
@@ -309,10 +310,11 @@ class Bishop:
 
         # Now check that there are no pieces in the path from start to end
         is_any_piece_present = False
-        dx, dy = int(start_x < end_x), int(start_y < end_y) # dx and dy are the directions of movement 
+        dx = 1 if int(start_x < end_x) else -1
+        dy = 1 if int(start_y < end_y) else -1
         x, y = start_x + dx, start_y + dy
 
-        while (x, y) != end:
+        while x != end_x and y != end_y:
             is_any_piece_present = is_any_piece_present or (board[x][y] is not None)
             x += dx
             y += dx
@@ -334,6 +336,7 @@ class King:
     def __init__(self, color, piece_type):
         self.color = color
         self.piece_type = piece_type
+        self.is_untouched = True
 
     # Representation for printing the piece
     def __repr__(self):
@@ -349,6 +352,10 @@ class King:
         if board[end_x][end_y] and board[end_x][end_y].color == self.color:
             return False
         
+        # Castle Move
+        if self.is_valid_king_castle_move(board, start, end):
+            return True
+
         is_valid_hr_move =  self.is_horizontal_move(start, end)
         is_valid_dia_move = self.is_diagonal_move(start, end)
         is_valid_vr_move = self.is_vertical_move(start, end)
@@ -375,6 +382,69 @@ class King:
         is_dia_move = ((end_x-start_x, end_y-start_y) in delta)
 
         return is_dia_move
+
+    # Placeholder for diagonal move validation
+    def is_valid_king_castle_move(self, board, start, end):
+        
+        start_x, start_y = start
+        end_x, end_y = end
+
+        # Four possible castles
+        # To castle wither of the pieces rook or king has to be untouched
+        # There should not a any piece between rook and king
+
+        rook_is_present = False
+        no_piece_in_bw = True
+        is_untouched = False
+
+        if start_x == 0 and start_y == 3 and end_x == 0 and end_y == 1:
+            # White-King Kingside Castle
+            # King's Position should be (0,3) and Rook's Position should be (0,0) and there should not be any piece between them
+            # Also the end position should be (0, 1)
+            
+            rook_is_present = (board[0][0].repr().lower() == 'r')
+            no_piece_in_bw = True
+            for k in range(1, 3):
+                no_piece_in_bw = no_piece_in_bw and (not board[0][k])
+            is_untouched = self.is_untouched or (rook_is_present and board[0][0].is_untouched)
+
+        elif start_x == 0 and start_y == 3 and end_x == 0 and end_y == 5:
+            # White-King Queenside Castle
+            # King's Position should be (0,3) and Rook's Position should be (0,7) and there should not be any piece between them
+            # Also the end position should be (0,5)
+
+            rook_is_present = (board[0][7].repr().lower() == 'r')
+            no_piece_in_bw = True
+            for k in range(4, 7):
+                no_piece_in_bw = no_piece_in_bw and (not board[0][k])
+            is_untouched = self.is_untouched or (rook_is_present and board[0][7].is_untouched)
+
+        
+        elif start_x == 7 and start_y == 3 and end_x == 7 and end_y == 1:
+            # Black-King Kingside Castle
+            # King's Position should be (7,3) and Rook's Position should be (7, 0) and there should not be any piece between them
+            # Also the end position should be (7,1)
+            
+            rook_is_present = (board[7][0].repr().lower() == 'r')
+            no_piece_in_bw = True
+            for k in range(1, 3):
+                no_piece_in_bw = no_piece_in_bw and (not board[7][k])
+            is_untouched = self.is_untouched or (rook_is_present and board[7][0].is_untouched)
+
+        
+        elif start_x == 7 and start_y == 3 and end_x == 7 and end_y == 5:
+            # Black-King Queenside Castle
+            # King's Position should be (7,3) and Rook's Position should be (7, 7) and there should not be any piece between them
+            # Also the end position should be (7, 5)
+
+            rook_is_present = (board[7][7].repr().lower() == 'r')
+            no_piece_in_bw = True
+            for k in range(4, 7):
+                no_piece_in_bw = no_piece_in_bw and (not board[7][k])
+            is_untouched = self.is_untouched or (rook_is_present and board[7][7].is_untouched)
+
+        else:
+            return False
 
     # Placeholder for vertical move validation
     def is_vertical_move(self, start, end):
@@ -448,10 +518,12 @@ class Queen:
 
         elif self.is_diagonal_move(start, end):
             
-            dx, dy = int(start_x < end_x), int(start_y < end_y) # dx and dy are the directions of movement 
+            is_any_piece_present = False
+            dx = 1 if int(start_x < end_x) else -1
+            dy = 1 if int(start_y < end_y) else -1
             x, y = start_x + dx, start_y + dy
 
-            while (x, y) != end:
+            while x != end_x and y != end_y:
                 is_any_piece_present = is_any_piece_present or (board[x][y] is not None)
                 x += dx
                 y += dx
@@ -555,13 +627,13 @@ class Game:
                 print("Invalid input format. Please ensure you're using (x,y) format.")
                 continue
             
-            
-            is_valid_move = self.board.is_valid_move(start=(start_x, start_x), end=(end_x, end_y), player_color=self.turn)
+            # print(start_x, start_y, end_x, end_y)
+            is_valid_move = self.board.is_valid_move(start=(start_x, start_y), end=(end_x, end_y), player_color=self.turn)
             if not is_valid_move:
                 print("Invalid Move! Try again.")
                 continue
             
-
+            self.board.move_piece(start=(start_x, start_y), end=(end_x, end_y))
 
             # Switch the turn after capturing the move
             self.switch_turn()

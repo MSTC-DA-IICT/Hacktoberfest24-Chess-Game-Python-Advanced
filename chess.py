@@ -106,6 +106,10 @@ class Knight:
         start_x, start_y = start
         end_x, end_y = end
 
+        # If the end position have a piece then that piece color should not be same as currunt piece color
+        if board[end_x][end_y] and board[end_x][end_y].color == self.color:
+            return False
+
         delta_knight = [(2, -1), (2, 1), (-1, 2), (1, 2), (-2, -1), (-2, 1), (-1, -2), (1, -2)]
         is_valid_end_position = False
 

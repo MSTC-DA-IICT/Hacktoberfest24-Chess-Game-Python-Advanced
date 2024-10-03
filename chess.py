@@ -43,7 +43,23 @@ class ChessBoard:
 
     # Placeholder function for validating moves (to be implemented)
     def is_valid_move(self, start, end, player_color):
-        pass
+
+        start_x, start_y = start
+        end_x, end_y = end
+
+        # Check for valid position
+        if (start_x < 0 or start_x > 7) or (start_y < 0 or start_y > 7) or (end_x < 0 or end_x > 7) or (end_y < 0 or end_y > 7):
+            return False
+        
+        # Check for existance of valid piece
+        if not self.board[start_x][start_y]:
+            return False
+        
+        # Check for valid piece color
+        if self.board[start_x][start_y] and (self.board[start_x][start_y].color != player_color[0]):
+            return False
+        
+        return self.board[start_x][start_y].is_valid_move(board=self.board, start=start, end=end)
 
     # Placeholder function to check if pawn promotion is possible
     def is_pawn_promotion_possible(self, start, end, player_color):
@@ -83,7 +99,22 @@ class Knight:
 
     # Placeholder for validating knight movement
     def is_valid_move(self, board, start, end):
-        pass
+
+        # (i+2, j-1) or (i+2, j+1)   or  (i-1, j+2) or (i+1, j+2)
+        # (i-2, j-1) or (i-2, j+1)   or  (i-1, j-2) or (i+1, j-2)
+
+        start_x, start_y = start
+        end_x, end_y = end
+
+        delta_knight = [(2, -1), (2, 1), (-1, 2), (1, 2), (-2, -1), (-2, 1), (-1, -2), (1, -2)]
+        is_valid_end_position = False
+
+        # Check for valid end position
+        for dx, dy in delta_knight:
+            is_valid_end_position = is_valid_end_position or (start_x + dx == end_x and start_y + dy == end_y)
+
+        return is_valid_end_position
+
 
 # Class representing a rook piece
 class Rook:
@@ -236,6 +267,14 @@ class Game:
             except ValueError:
                 print("Invalid input format. Please ensure you're using (x,y) format.")
                 continue
+            
+            
+            is_valid_move = self.board.is_valid_move(start=(start_x, start_x), end=(end_x, end_y), player_color=self.turn)
+            if not is_valid_move:
+                print("Invalid Move! Try again.")
+                continue
+            
+
 
             # Switch the turn after capturing the move
             self.switch_turn()

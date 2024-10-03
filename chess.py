@@ -115,7 +115,6 @@ class Knight:
 
         return is_valid_end_position
 
-
 # Class representing a rook piece
 class Rook:
     def __init__(self, color, piece_type):
@@ -149,12 +148,40 @@ class Bishop:
         return self.piece_type if self.color == 'w' else self.piece_type.lower()
 
     # Placeholder for validating bishop movement
-    def is_valid_move(self, start, end, player_color):
-        pass
+    def is_valid_move(self, board, start, end):
+
+        start_x, start_y = start
+        end_x, end_y = end
+
+        # The bishop can only move diagonally
+        if not self.is_diagonal_move(self, start, end):
+            return False
+        
+        # If the end position have a piece then that piece color should not be same as currunt piece color
+        if board[end_x][end_y] and board[end_x][end_y].color == self.color:
+            return False
+
+        # Now check that there are no pieces in the path from start to end
+        any_piece_present = False
+        dx, dy = int(start_x < end_x), int(start_y < end_y) # dx and dy are the directions of movement 
+        x, y = start_x + dx, start_y + dy
+
+        while (x, y) != end:
+            any_piece_present = any_piece_present or (board[x][y] is not None)
+            x += dx
+            y += dx
+
+        return not any_piece_present
 
     # Placeholder for validating diagonal movement
-    def is_diagonal_move(self, board, start, end):
-        pass
+    def is_diagonal_move(self, start, end):
+        
+        start_x, start_y = start
+        end_x, end_y = end
+
+        # Check for valid diagonal move usign the condition: (x, y) where |x-y| = |i-j|
+        is_dia_move = (abs(start_x-start_y) == abs(end_x-end_y))
+        return is_dia_move
 
 # Class representing a king piece
 class King:

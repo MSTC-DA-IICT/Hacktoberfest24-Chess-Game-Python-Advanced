@@ -64,8 +64,49 @@ class ChessBoard:
         if self.board[start_x][start_y] and (self.board[start_x][start_y].color != player_color[0]):
             return False
         
+        # Check for castle move before
+        if self.board[start_x][start_y].repr().lower() == 'k': 
+            is_castle_move = self.board[start_x][start_y].is_valid_king_castle_move(self.board, start, end)
+            self.perform_rook_move_for_king_castle(start, end)
+            return True
+
         return self.board[start_x][start_y].is_valid_move(board=self.board, start=start, end=end)
 
+    # Function to perform rook move if the move is king castle
+    def perform_rook_move_for_king_castle(self, start, end):
+
+        start_x, start_y = start
+        end_x, end_y = end
+
+        rook_start_x, rook_start_y = 0, 0
+        rook_end_x, rook_end_y = 0, 0
+        # Four possible castles
+
+        if start_x == 0 and start_y == 3 and end_x == 0 and end_y == 1:
+            # White-King Kingside Castle
+            rook_start_x, rook_start_y = (0, 0)
+            rook_end_x, rook_end_y = (0, 2)
+
+        elif start_x == 0 and start_y == 3 and end_x == 0 and end_y == 5:
+            # White-King Queenside Castle
+            rook_start_x, rook_start_y = (0, 7)
+            rook_end_x, rook_end_y = (0, 4)
+    
+        elif start_x == 7 and start_y == 3 and end_x == 7 and end_y == 1:
+            # Black-King Kingside Castle
+            rook_start_x, rook_start_y = (7, 0)
+            rook_end_x, rook_end_y = (7, 2)
+        
+        elif start_x == 7 and start_y == 3 and end_x == 7 and end_y == 5:
+            # Black-King Queenside Castle
+            rook_start_x, rook_start_y = (7, 7)
+            rook_end_x, rook_end_y = (7, 4)
+        else:
+            return
+        
+        self.move_piece(start=(rook_start_x, rook_start_y), end=(rook_end_x, rook_end_y))
+        return
+    
     # Placeholder function to check if pawn promotion is possible
     def is_pawn_promotion_possible(self, start, end, player_color):
         pass
@@ -351,10 +392,6 @@ class King:
         # If the end position have a piece then that piece color should not be same as currunt piece color
         if board[end_x][end_y] and board[end_x][end_y].color == self.color:
             return False
-        
-        # Castle Move
-        if self.is_valid_king_castle_move(board, start, end):
-            return True
 
         is_valid_hr_move =  self.is_horizontal_move(start, end)
         is_valid_dia_move = self.is_diagonal_move(start, end)

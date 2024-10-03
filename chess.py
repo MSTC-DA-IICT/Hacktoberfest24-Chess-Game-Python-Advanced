@@ -163,7 +163,6 @@ class Rook:
         elif self.is_vertical_move(start, end):
 
             # Now check that no other pieces are there in path fron start to end
-            anyPiece = False
             if start_x < end_x:  
 
                 # Down Move 
@@ -233,16 +232,16 @@ class Bishop:
             return False
 
         # Now check that there are no pieces in the path from start to end
-        any_piece_present = False
+        is_any_piece_present = False
         dx, dy = int(start_x < end_x), int(start_y < end_y) # dx and dy are the directions of movement 
         x, y = start_x + dx, start_y + dy
 
         while (x, y) != end:
-            any_piece_present = any_piece_present or (board[x][y] is not None)
+            is_any_piece_present = is_any_piece_present or (board[x][y] is not None)
             x += dx
             y += dx
 
-        return not any_piece_present
+        return not is_any_piece_present
 
     # Placeholder for validating diagonal movement
     def is_diagonal_move(self, start, end):
@@ -322,20 +321,103 @@ class Queen:
         return self.piece_type if self.color == 'w' else self.piece_type.lower()
 
     # Placeholder for validating queen movement
-    def is_valid_move(self, start, end, player_color):
-        pass
+    def is_valid_move(self, board, start, end):
+        
+        start_x, start_y = start
+        end_x, end_y = end  
+
+        # If the end position have a piece then that piece color should not be same as currunt piece color
+        if board[end_x][end_y] and board[end_x][end_y].color == self.color:
+            return False
+        
+        is_any_piece_present = False
+
+        if self.is_horizontal_move(start, end):
+            
+            # Now check that no other pieces are there in path fron start to end
+            if start_y < end_y:  
+
+                # Right Move 
+                for k in range(start_y+1, end_y, 1):
+                    is_any_piece_present = is_any_piece_present or (board[start_x][k] is not None)
+
+            elif start_y > end_y:  
+
+                # Left Move
+                for k in range(start_y-1, end_y, -1):
+                    is_any_piece_present = is_any_piece_present or (board[start_x][k] is not None)
+
+            else:  
+                # No Move
+                return False
+            
+        elif self.is_vertical_move(start, end):
+            
+            # Now check that no other pieces are there in path fron start to end
+            if start_x < end_x:  
+
+                # Down Move 
+                for k in range(start_x+1, end_x, 1):
+                    is_any_piece_present = is_any_piece_present or (board[k][start_y] is not None)
+
+            elif start_x > end_x:  
+
+                # Up Move
+                for k in range(start_x-1, end_x, -1):
+                    is_any_piece_present = is_any_piece_present or (board[k][start_y] is not None)
+
+            else:  
+                # No Move
+                return False
+
+        elif self.is_diagonal_move(start, end):
+            
+            dx, dy = int(start_x < end_x), int(start_y < end_y) # dx and dy are the directions of movement 
+            x, y = start_x + dx, start_y + dy
+
+            while (x, y) != end:
+                is_any_piece_present = is_any_piece_present or (board[x][y] is not None)
+                x += dx
+                y += dx
+            
+        else:
+            return False
+        
+        return not is_any_piece_present
 
     # Placeholder for horizontal movement check
-    def is_horizontal_move(self, board, start, end):
-        pass
+    def is_horizontal_move(self, start, end):
+        
+        start_x, start_y = start
+        end_x, end_y = end 
+
+        # Check for horizontal movement using the condition: (i, k) where 0 <= k <= 7, k != j i.e. start and end position should have same x coordinate
+        is_hr_move = (start_x == end_x)
+
+        return is_hr_move
 
     # Placeholder for vertical movement check
-    def is_vertical_move(self, board, start, end):
-        pass
+    def is_vertical_move(self, start, end):
+        
+        start_x, start_y = start
+        end_x, end_y = end 
+
+        # Check for horizontal movement using the condition: (k, j) where 0 <= k <= 7, k != i i.e. start and end position should have same y coordinate
+
+        is_vr_move = (start_y == end_y)
+        
+        return is_vr_move
 
     # Placeholder for diagonal movement check
-    def is_diagonal_move(self, board, start, end):
-        pass
+    def is_diagonal_move(self, start, end):
+
+        start_x, start_y = start
+        end_x, end_y = end
+
+        # Check for valid diagonal move usign the condition: (x, y) where |x-y| = |i-j|
+        is_dia_move = (abs(start_x-start_y) == abs(end_x-end_y))
+        return is_dia_move
+        
 
 # Class representing the game logic
 class Game:

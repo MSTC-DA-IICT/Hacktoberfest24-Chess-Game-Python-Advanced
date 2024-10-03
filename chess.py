@@ -439,7 +439,7 @@ class King:
         end_x, end_y = end
 
         # Four possible castles
-        # To castle wither of the pieces rook or king has to be untouched
+        # To castle king and rook should be at their original location
         # There should not a any piece between rook and king
 
         rook_is_present = False
@@ -455,7 +455,7 @@ class King:
             no_piece_in_bw = True
             for k in range(5, 7):
                 no_piece_in_bw = no_piece_in_bw and (not board[7][k])
-            is_untouched = self.is_untouched or (rook_is_present and board[7][7].is_untouched)
+            is_untouched = self.is_untouched and (rook_is_present and board[7][7].is_untouched)
 
         elif start_x == 7 and start_y == 4 and end_x == 7 and end_y == 2:
             # White-King Queenside Castle
@@ -466,7 +466,7 @@ class King:
             no_piece_in_bw = True
             for k in range(1, 4):
                 no_piece_in_bw = no_piece_in_bw and (not board[7][k])
-            is_untouched = self.is_untouched or (rook_is_present and board[7][0].is_untouched)
+            is_untouched = self.is_untouched and (rook_is_present and board[7][0].is_untouched)
 
         elif start_x == 0 and start_y == 4 and end_x == 0 and end_y == 6:
             # Black-King Kingside Castle
@@ -477,7 +477,7 @@ class King:
             no_piece_in_bw = True
             for k in range(5, 7):
                 no_piece_in_bw = no_piece_in_bw and (not board[0][k])
-            is_untouched = self.is_untouched or (rook_is_present and board[0][7].is_untouched)
+            is_untouched = self.is_untouched and (rook_is_present and board[0][7].is_untouched)
 
         elif start_x == 0 and start_y == 4 and end_x == 0 and end_y == 2:
             # Black-King Queenside Castle
@@ -488,7 +488,7 @@ class King:
             no_piece_in_bw = True
             for k in range(1, 4):
                 no_piece_in_bw = no_piece_in_bw and (not board[0][k])
-            is_untouched = self.is_untouched or (rook_is_present and board[0][0].is_untouched)
+            is_untouched = self.is_untouched and (rook_is_present and board[0][0].is_untouched)
 
         else:
             return False

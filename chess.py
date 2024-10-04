@@ -706,7 +706,7 @@ class Game:
 
                 # Convert string input location to grid coordinates
                 start_x, start_y = 8-int(start_input[1]), ord(start_input[0].upper()) - ord('A')
-                end_x, end_y = 8-int(end_input[1]), ord(end_input[0]).upper() - ord('A')
+                end_x, end_y = 8-int(end_input[1]), ord(end_input[0].upper()) - ord('A')
 
                 print(f"Move requested: Piece at {start_input}({start_x}, {start_y}) to {end_input}({end_x}, {end_y}).")
 

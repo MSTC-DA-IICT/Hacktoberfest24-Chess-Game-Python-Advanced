@@ -6,7 +6,9 @@ class ChessBoard:
 
     # Creates the 8x8 chessboard and places all pieces
     def create_board(self): 
-        board = [[None for _ in range(8)] for _ in range(8)]  # Create 8x8 grid
+
+        board = [["." for _ in range(8)] for _ in range(8)]  # Create 8x8 grid
+
         # Place white pawns at row 1 and black pawns at row 6
         for i in range(8):
             board[1][i] = Pawn('b', 'P')  # Black pawn
@@ -36,12 +38,12 @@ class ChessBoard:
     def print_board(self):
 
         i=8
-        print("     ----------------- ")
-        for row in self.board:
-            print(f'  {i} |', ' '.join([str(piece) if piece else '.' for piece in row]), '|')  # Display pieces or '.' for empty squares
+        for row in reversed(self.board):
+            print(f'  {i} ', ' '.join([str(piece) if piece else '.' for piece in row]))  # Display pieces or '.' for empty squares
             i-=1
-        print("     ----------------- ")
-        print("      A B C D E F G H")  # Display pieces or '.' for empty squares
+        
+        print("     A B C D E F G H")  # Display pieces or '.' for empty squares
+
 
     # Placeholder function for moving pieces (to be implemented)
     def move_piece(self, start, end):
@@ -704,19 +706,14 @@ class Game:
             # Process the inputs
             try:
 
-                # Convert string input location to grid coordinates
-                start_x, start_y = 8-int(start_input[1]), ord(start_input[0].upper()) - ord('A')
-                end_x, end_y = 8-int(end_input[1]), ord(end_input[0].upper()) - ord('A')
+                start_x, start_y = map(int, [ord(start_input[0]) - ord('A') + 1, start_input[1]])
+                end_x, end_y = map(int, [ord(end_input[0]) - ord('A') + 1, end_input[1]])
 
-                print(f"Move requested: Piece at {start_input}({start_x}, {start_y}) to {end_input}({end_x}, {end_y}).")
+                print(f"\nMove requested: Piece at {start_input} to {end_input} as {piece_input}\n")
 
             except ValueError:
-                print("Invalid input format. Please ensure you're using standard format.")
-                continue
-            
-            is_valid_move = self.board.is_valid_move(start=(start_x, start_y), end=(end_x, end_y), player_color=self.turn)
-            if not is_valid_move:
-                print("Invalid Move! Try again.")
+                print("\nInvalid input format. Please ensure you're using (x,y) format.\n")
+
                 continue
             
             if self.board.is_pawn_promotion_possible(start=(start_x, start_y), end=(end_x, end_y), player_color=self.turn):

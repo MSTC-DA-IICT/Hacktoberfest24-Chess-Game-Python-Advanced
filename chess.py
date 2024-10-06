@@ -402,14 +402,14 @@ class Bishop:
 
         # Now check that there are no pieces in the path from start to end
         is_any_piece_present = False
-        dx = 1 if int(start_x < end_x) else -1
-        dy = 1 if int(start_y < end_y) else -1
+        dx = 1 if start_x < end_x else -1
+        dy = 1 if start_y < end_y else -1
         x, y = start_x + dx, start_y + dy
 
         while x != end_x and y != end_y:
             is_any_piece_present = is_any_piece_present or (board[x][y] is not None)
             x += dx
-            y += dx
+            y += dy
 
         return not is_any_piece_present
 
@@ -607,14 +607,14 @@ class Queen:
         elif self.is_diagonal_move(start, end):
             
             is_any_piece_present = False
-            dx = 1 if int(start_x < end_x) else -1
-            dy = 1 if int(start_y < end_y) else -1
+            dx = 1 if start_x < end_x else -1
+            dy = 1 if start_y < end_y else -1
             x, y = start_x + dx, start_y + dy
 
             while x != end_x and y != end_y:
                 is_any_piece_present = is_any_piece_present or (board[x][y] is not None)
                 x += dx
-                y += dx
+                y += dy
             
         else:
             return False

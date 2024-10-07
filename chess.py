@@ -166,6 +166,43 @@ class ChessBoard:
         if piece == '2':
             self.board[end_x][end_y].is_untouched = False
 
+    # Placeholder to check if the palyer king is under check after player has completed his turn
+    def is_king_check_free(self, player_color):
+        return not self.check_if_there_is_check_on_king(player_color)
+    
+    # Placeholder for checking if the king is in check
+    def check_if_there_is_check_on_king(self, player_color):
+    
+        # Find the location of the king
+        king_position = None
+
+        for i in range(8):
+            for j in range(8):
+                piece = self.board[i][j]
+                if piece.__repr__() in ('k', 'K') and piece.color == player_color[0]:
+                    king_position = (i, j)
+                    break
+            if king_position:
+                break
+        
+        opponant_player = 'white' if player_color == 'black' else 'black'
+        # Now using every opponant piece try to validate the king-capture move
+
+        for i in range(8):
+            for j in range(8):
+                piece = self.board[i][j]
+                if piece and piece.color == opponant_player[0]:
+                    is_possible_capture_king = self.is_valid_move(start=(i, j), end=king_position, player_color=opponant_player)
+                    if is_possible_capture_king:
+                        # King is in check
+                        return True
+        
+        return False
+
+    # Placeholder for checking if there is check or checkmate
+    def check_check_and_mate(self):
+        pass
+
 # Class representing a pawn piece
 class Pawn:
     def __init__(self, color, piece_type):
@@ -660,24 +697,12 @@ class Game:
         self.board = ChessBoard()  # Create the chessboard
         self.turn = 'white'  # White player starts
 
-    # Placeholder for checking if there is check or checkmate
-    def check_check_and_mate(self):
-        pass
-
-    # Placeholder to check if the palyer king is under check after player has completed his turn
-    def is_king_check_free(self, turn):
-        pass
-
     # Placeholder to switch turns between players
     def switch_turn(self):
         if self.turn == 'white':
             self.turn = 'black'  # Switch to black
         else:
             self.turn = 'white'  # Switch to white
-
-    # Placeholder for checking if the king is in check
-    def check_is_there_is_check_on_king(self, turn):
-        pass
 
     # Function to start and display the game board
     def play(self):
@@ -724,6 +749,11 @@ class Game:
             else:
                 # Move piece if move is valid
                 self.board.move_piece(start=(start_x, start_y), end=(end_x, end_y))
+
+            # Check if there is a check on the opponant's king
+            opponant_player = 'white' if self.turn == 'black' else 'black'
+            if self.board.check_if_there_is_check_on_king(player_color = opponant_player):
+                print(f"Check! {opponant_player}'s king is under attack.")
 
             # Switch the turn after capturing the move
             self.switch_turn()

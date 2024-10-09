@@ -1,0 +1,1 @@
+Put the testing moves in the testing.txt file. Remember, the moves are in alternate black and white. Starting from black

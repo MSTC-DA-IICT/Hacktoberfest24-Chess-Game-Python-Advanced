@@ -15,9 +15,7 @@ def read_moves_from_file(file_path):
 
 def run_predefined_moves():
     # Path to the testing file
-    
-
-    file_path = os.path.join("AutomatedTesting",  'testing.txt')
+    file_path = os.path.join("AutomatedTesting", 'testing.txt')
     
     moves = read_moves_from_file(file_path)
     if not moves:
@@ -41,7 +39,8 @@ def run_predefined_moves():
             # Switch turns after each valid move
             game.switch_turn()
         else:
-            print(f"Invalid Move: {move}")
+            print(f"Invalid Move: {move}. Please look into the \"testing.txt\" file.")
+            return  # Exit if an invalid move is encountered
 
     # After executing predefined moves, continue the game
     game.play()  # Allow players to continue manually

@@ -13,6 +13,11 @@ class Game:
         else:
             self.turn = 'white'  # Switch to white
 
+    # Function to reset the game state
+    def reset_game(self):
+        self.board = ChessBoard()  # Reset the chessboard
+        self.turn = 'white'  # Reset the turn to white
+
     # Function to start and display the game board
     def play(self):
         while True:
@@ -62,7 +67,18 @@ class Game:
             # Check if there is a check on the opponant's king
             opponant_player = 'white' if self.turn == 'black' else 'black'
             if self.board.check_if_there_is_check_on_king(player_color = opponant_player):
-                print(f"Check! {opponant_player}'s king is under attack.")
+                if self.board.check_checkmate(player_color= opponant_player):
+                    print(f"CheckMated!!! {opponant_player} Wins")
+                    play_again_or_not = input("Want to Play Again?(Y/N): ")
+                    if (play_again_or_not.upper() == "Y"):
+                        self.reset_game()
+                        continue
+                    else:
+                        print("Okay, Exiting the Game.")
+                        break
+
+                else:
+                    print(f"Check! {opponant_player}'s king is under attack.")
 
             # Switch the turn after capturing the move
             self.switch_turn()

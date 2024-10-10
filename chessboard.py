@@ -205,7 +205,96 @@ class ChessBoard:
                         return True
         
         return False
+ 
+    def get_king_moves(self, king_position):
+        king_moves = []
+        x, y = king_position
+        directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+        for dx, dy in directions:
+            new_x, new_y = x + dx, y + dy
+            if 0 <= new_x < 8 and 0 <= new_y < 8:
+                king_moves.append((new_x, new_y))
+        return king_moves
 
-    # Placeholder for checking if there is check or checkmate
-    def check_check_and_mate(self):
-        pass
+    #Function to check if king is checkmated
+    def check_checkmate(self, player_color):
+        if not self.check_if_there_is_check_on_king(player_color):
+            return False  # King is not in check, so no checkmate
+
+        # 1. Check if the king has any valid moves
+        # Find the location of the king
+        king_position = None
+
+        for i in range(8):
+            for j in range(8):
+                piece = self.board[i][j]
+                if piece.__repr__() in ('k', 'K') and piece.color == player_color[0]:
+                    king_position = (i, j)
+                    break
+            if king_position:
+                break
+        
+        King_moves = self.get_king_moves(king_position)
+        for move in King_moves:
+            if self.is_valid_move(king_position, move, player_color):
+                if not self.is_king_in_check_after_move(king_position, move, player_color):
+                    return False  # King can escape, so not checkmate
+
+        # 2. Check if any other piece can block or capture the attacking piece
+        if self.can_any_piece_block_or_capture(player_color):
+            return False  # Another piece can help, so not checkmate
+
+        return True  # Checkmate
+
+    # funtion to check if the king can move somewhere to save itself
+    def is_king_in_check_after_move(self, start, end, player_color):
+        # Temporarily move the king to see if it resolves the check
+        temp_piece = self.board[end[0]][end[1]]
+        self.move_piece(start, end)
+        is_still_in_check = self.check_if_there_is_check_on_king(player_color)
+        self.move_piece(end, start)  # Undo the move
+        self.board[end[0]][end[1]] = temp_piece  # Restore the captured piece, if any
+        return is_still_in_check
+
+    # can any other piece block the checkmate
+    def can_any_piece_block_or_capture(self, player_color):
+        opponent_color = 'white' if player_color == 'black' else 'black'
+        
+        # Find the position of the player's king
+         # Find the location of the king
+        king_position = None
+
+        for i in range(8):
+            for j in range(8):
+                piece = self.board[i][j]
+                if piece.__repr__() in ('k', 'K') and piece.color == player_color[0]:
+                    king_position = (i, j)
+                    break
+            if king_position:
+                break
+        
+        # Find the piece putting the king in check
+        attacking_pieces = []
+        for i in range(8):
+            for j in range(8):
+                piece = self.board[i][j]
+                if piece and piece.color == opponent_color[0]:
+                    if self.is_valid_move((i, j), king_position, opponent_color):
+                        attacking_pieces.append((i, j))  # Add attacking piece's position
+
+        if not attacking_pieces:
+            return False  # No attacking piece found, which shouldn't happen if the king is in check
+
+        # Check if any of the player's pieces can block or capture the attacking piece(s)
+        for i in range(8):
+            for j in range(8):
+                piece = self.board[i][j]
+                if piece and piece.color == player_color[0]:  # Player's piece
+                    for attacker in attacking_pieces:
+                        # Check if the piece can move to block or capture the attacker
+                        if self.is_valid_move((i, j), attacker, player_color):
+                            if not self.is_king_in_check_after_move((i, j), attacker, player_color):
+                                return True  # A piece can block or capture the attacker
+
+        return False  # No piece can block or capture the attacker
+
